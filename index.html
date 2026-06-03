@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify – About Us 🤍</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: #0c070f;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND FLOATING HEARTS --- */
+        .bg-hearts {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1; overflow: hidden;
+        }
+        .heart {
+            position: absolute; color: rgba(255, 77, 109, 0.2);
+            font-size: 20px; animation: flyUp 8s infinite linear; opacity: 0;
+        }
+        @keyframes flyUp {
+            0% { transform: translateY(105vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2) translateX(30px); opacity: 0; }
+        }
+
+        /* --- HALAMAN 1: WELCOME SCREEN --- */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #180b1e 0%, #050206 100%);
+            z-index: 9999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 25px;
+            cursor: pointer; transition: all 0.8s ease;
+        }
+        .kaset {
+            width: 180px; height: 180px; background: #1f1424;
+            border-radius: 50%; border: 10px solid #3d2247;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.3);
+            position: relative; animation: pulse 2s infinite;
+        }
+        .kaset::before {
+            content: ''; width: 60px; height: 60px; background: #0c070f;
+            border-radius: 50%; border: 4px dashed #ff4d6d;
+        }
+        #welcome-screen h2 { font-size: 1.5rem; text-shadow: 0 0 10px #ff4d6d; font-weight: 600; }
+        #welcome-screen p { font-size: 0.85rem; color: #b3b3b3; letter-spacing: 1px; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 77, 109, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 77, 109, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 77, 109, 0.3); }
+        }
+
+        /* --- WADAH UTAMA --- */
+        .app-container {
+            width: 100%; max-width: 420px; padding: 25px;
+            background: #130d1a; border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative; z-index: 10; display: none;
+            overflow: hidden; min-height: 85vh;
+            animation: slideUp 0.6s ease forwards;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- SCREEN LAYOUT --- */
+        .screen {
+            display: none; flex-direction: column; gap: 20px; width: 100%;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .header-player { font-size: 0.75rem; color: #b3b3b3; letter-spacing: 2px; font-weight: 600; text-align: center; display: block; }
+
+        /* --- ALBUM ART (VINYL) --- */
+        .album-wrapper { width: 100%; display: flex; justify-content: center; padding: 15px 0; }
+        .vinyl-disc {
+            width: 220px; height: 220px; background: #000;
+            border-radius: 50%; padding: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background: radial-gradient(circle, #333 10%, #111 11%, #111 20%, #222 21%, #111 30%, #222 31%, #111 40%, #000 41%);
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.5s ease;
+        }
+        .vinyl-disc img {
+            width: 110px; height: 110px; border-radius: 50%; object-fit: cover;
+            border: 5px solid #130d1a;
+        }
+        .putar-vinyl { animation: berputar 12s linear infinite; }
+        @keyframes berputar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* --- SONG INFO & PROGRESS --- */
+        .song-info { text-align: left; margin-top: 5px; }
+        .song-title { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .song-artist { font-size: 0.9rem; color: #ff4d6d; font-weight: 500; }
+
+        .progress-area { width: 100%; margin-top: 10px; }
+        .bar-bg { width: 100%; height: 4px; background: #333; border-radius: 2px; position: relative; }
+        .bar-fill { width: 65%; height: 100%; background: #ff4d6d; border-radius: 2px; box-shadow: 0 0 8px #ff4d6d; }
+        .time-stamp { display: flex; justify-content: space-between; font-size: 0.75rem; color: #b3b3b3; margin-top: 6px; }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 30px; margin: 10px 0; }
+        .btn-control { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+        .btn-control:hover { color: #ff4d6d; transform: scale(1.1); }
+        .btn-play { font-size: 3rem; color: #ff4d6d; }
+        .btn-play:hover { transform: scale(1.05); color: #ff7a98; }
+
+        /* --- LYRICS CARD --- */
+        .lyrics-box {
+            background: #ff4d6d; border-radius: 16px; padding: 20px;
+            text-align: left; max-height: 180px; overflow-y: auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.15);
+        }
+        .lyrics-box h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #0c070f; margin-bottom: 12px; font-weight: 700; }
+        .lyrics-text { font-size: 1rem; font-weight: 600; line-height: 1.6; color: #0c070f; }
+        .lyrics-text p { margin-bottom: 15px; opacity: 0.9; }
+
+        /* --- INTERACTIVE QUIZ --- */
+        .quiz-section {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 15px;
+            position: relative; min-height: 130px; text-align: center;
+        }
+        .quiz-section h4 { font-size: 0.95rem; font-weight: 600; color: #ffb3c1; }
+        .btn-group { display: flex; justify-content: center; gap: 20px; width: 100%; position: relative; }
+        .btn-quiz { padding: 12px 30px; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; }
+        .btn-ya { background: #ff4d6d; color: #fff; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3); }
+        .btn-ya:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff4d6d; }
+        .btn-nggak { background: rgba(255, 255, 255, 0.1); color: #fff; position: absolute; right: 30px; }
+
+        /* --- TOMBOL NAVIGASI --- */
+        .btn-nav {
+            background: transparent; border: 1px solid #ff4d6d; color: #ff4d6d;
+            width: 100%; padding: 14px; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        .btn-nav:hover { background: #ff4d6d; color: #fff; box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); }
+
+        /* --- SCREEN PLAYLIST --- */
+        .playlist-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .playlist-cover { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .playlist-info h2 { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
+        .playlist-info p { font-size: 0.8rem; color: #b3b3b3; }
+
+        .tracklist { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 5px; margin-bottom: 10px; }
+        .track-item {
+            display: flex; flex-direction: column; padding: 12px;
+            background: rgba(255, 255, 255, 0.05); border-radius: 12px; 
+            transition: 0.3s; cursor: pointer; border: 1px solid transparent;
+        }
+        .track-item:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 77, 109, 0.3); }
+        .track-header { display: flex; align-items: center; gap: 15px; width: 100%; }
+        .track-num { font-size: 1rem; color: #b3b3b3; font-weight: 600; width: 25px; text-align: center; }
+        .track-details { flex: 1; text-align: left; }
+        .track-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 3px; }
+        .track-artist { font-size: 0.8rem; color: #b3b3b3; }
+        .track-hint { font-size: 0.75rem; color: #b3b3b3; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; }
+        
+        .track-body {
+            display: none; flex-direction: column; gap: 12px; margin-top: 15px;
+            padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1);
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .track-body.show { display: flex; }
+        .track-photo { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .track-desc { font-size: 0.95rem; line-height: 1.5; color: #fff; text-align: left; }
+
+        /* --- SCREEN SLIDESHOW GALERI --- */
+        .slideshow-container {
+            width: 100%; height: 350px; border-radius: 16px; overflow: hidden;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        #slide-img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: opacity 0.6s ease-in-out;
+        }
+        .slideshow-controls {
+            display: flex; justify-content: center; gap: 40px; margin-top: 10px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #ff4d6d; border-radius: 10px; }
+    </style>
+</head>
+<body onload="initSpotify()">
+
+    <audio id="musikBg" src="lagu.mp3" loop></audio>
+
+    <div class="bg-hearts" id="hearts-container"></div>
+
+    <div id="welcome-screen" onclick="mulaiPlayer()">
+        <div class="kaset"></div>
+        <h2>Spotify: About Us 🤍</h2>
+        <p>[ Tap Layar Buat Putar Lagu ]</p>
+    </div>
+
+    <div class="app-container" id="main-app">
+
+        <div class="screen active" id="screen-player">
+            <span class="header-player">PLAYING FROM PLAYLIST: ABOUT US</span>
+
+            <div class="album-wrapper">
+                <div class="vinyl-disc" id="vinyl">
+                    <img src="image/foto1.png" alt="Foto Pacar" id="coverAlbum">
+                </div>
+            </div>
+
+            <div class="song-info">
+                <div class="song-title">ABOUT US</div>
+                <div class="song-artist"></div> 
+            </div>
+
+            <div class="progress-area">
+                <div class="bar-bg">
+                    <div class="bar-fill"></div>
+                </div>
+                <div class="time-stamp">
+                    <span>0:00</span>
+                    <span>♾️:♾️</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-control">⏮</button>
+                <button class="btn-control btn-play" onclick="togglePlay()">⏸</button>
+                <button class="btn-control">⏭</button>
+            </div>
+
+            <div class="lyrics-box">
+                <h4>Lyrics / Surat Buat Kamu 📜</h4>
+                <div class="lyrics-text">
+                    <p>Makasih yaa udah selalu sabar sama aku selama iniiiii, kalo ada nominasi manusia paling sabarr keknya itu kamu deh. 🤍</p>
+                    <p>Aku tahu aku banyak salah ke kamuuu, banyak bikin kesel, sering ngambek atau ngeselin, tapi kamu tetep milih buat sabar dan ngertiin akuu.</p>
+                    <p>Kadang aku suka mikir, kok bisa ya ada orang sebaik dan setulus kamu yang mau nemenin aku wkwk. Beruntung bangettt aku bisa punya kamu di hidup akuuuu.</p>
+                    <p>Maaf ya kalo aku belum bisa jadi yang sempurna, tapi aku bakal selalu berusaha buat bahagiain kamu terussss. Makasii banyakkk pokonyaa lopyuuuuuuu sekebonn!! 🫶✨</p>
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <h4 id="teks-quiz">Tetep sayang dan sabar sama aku terus kan? 🥺</h4>
+                <div class="btn-group" id="wadah-tombol">
+                    <button class="btn-quiz btn-ya" onclick="jawabYa()">Iyaaa 🤍</button>
+                    <button class="btn-quiz btn-nggak" id="tombol-nggak" onmouseover="kaburDong()" onclick="kaburDong()">Nggak 😜</button>
+                </div>
+            </div>
+
+            <button class="btn-nav" onclick="pindahScreen('screen-playlist')">Buka Memory Album 📸</button>
+        </div>
+
+        <div class="screen" id="screen-playlist">
+            <div class="playlist-header">
+                <img src="image/foto2.jpeg" alt="Playlist Cover" class="playlist-cover" onerror="this.src='image/foto1.png'">
+                <div class="playlist-info">
+                    <h2>Kenapa Harus Kamu? ✨</h2>
+                    <p>Album • 6 Memori • Selamanya</p>
+                </div>
+            </div>
+
+            <div class="tracklist" id="daftar-alasan">
+                </div>
+
+            <button class="btn-nav" onclick="pindahScreen('screen-gallery')">Lihat Galeri Slideshow 🎞️</button>
+            <button class="btn-nav" style="background:transparent; border-color:rgba(255,255,255,0.2); color:#b3b3b3;" onclick="pindahScreen('screen-player')">Kembali ke Player 🔙</button>
+        </div>
+
+        <div class="screen" id="screen-gallery">
+            <div class="playlist-header" style="justify-content: center; margin-bottom: 20px;">
+                <div class="playlist-info" style="text-align: center;">
+                    <h2>Galeri Kenangan Kita ✨</h2>
+                    <p>Memori yang terus berjalan...</p>
+                </div>
+            </div>
+
+            <div class="slideshow-container">
+                <img id="slide-img" src="image/slide1.jpeg" alt="Kenangan" onerror="this.src='image/foto1.png'">
+            </div>
+            
+            <div class="slideshow-controls">
+                <button class="btn-control" onclick="prevSlide()">⏮</button>
+                <button class="btn-control" onclick="togglePlay()">⏯</button>
+                <button class="btn-control" onclick="nextSlide()">⏭</button>
+            </div>
+
+            <button class="btn-nav" style="margin-top: 30px;" onclick="pindahScreen('screen-playlist')">Kembali ke Album 🔙</button>
+        </div>
+
+    </div>
+
+    <script>
+        let lagu = document.getElementById('musikBg');
+        let vinyl = document.getElementById('vinyl');
+
+        // --- DATA TRACKLIST (ALASAN & FOTO) ---
+        const alasanList = [
+            { judul: "Track 01: Tentang Kamu", alasan: "Kamu cantikkkkkk bangett cuy.", foto: "image/foto_galeri1.jpeg" },
+            { judul: "Track 02: Selalu Hadir", alasan: "Kamu selalu adaa buat akuuu dalam kondisi apapun.", foto: "image/foto_galeri2.jpeg" },
+            { judul: "Track 03: Kesabaranmu", alasan: "Kamu sabarrr bangett ngadepin tingkah aku selama ini.", foto: "image/foto_galeri3.jpeg" },
+            { judul: "Track 04: Telinga Terbaik", alasan: "Kamu selalu menjadi pendengar yang baik buat aku.", foto: "image/foto_galeri4.jpeg" },
+            { judul: "Track 05: Rasa Nyaman", alasan: "Kalo deket kamu tuh bawaannya selalu nyamannnn.", foto: "image/foto_galeri5.jpeg" },
+            { judul: "Track 06: Bonus Rahasia", alasan: "Dan tentunya bohayyyy + jago ekhemm :p", foto: "image/foto_galeri6.jpeg" }
+        ];
+
+        // --- DATA FOTO UNTUK SLIDESHOW (19 FOTO) ---
+        const fotoSlideshow = [
+            "image/foto1.png",
+            "image/foto2.jpeg",
+            "image/foto3.jpeg",
+            "image/foto5.jpeg",
+            "image/foto6.jpeg",
+            "image/foto7.jpeg",
+            "image/foto8.jpeg",
+            "image/foto9.jpeg",
+            "image/foto10.jpeg",
+            "image/foto11.jpeg",
+            "image/foto12.jpeg",
+            "image/foto13.jpeg",
+            "image/foto14.jpeg",
+            "image/foto15.jpeg",
+            "image/foto16.jpeg",
+            "image/foto17.jpeg",
+            "image/foto18.jpeg",
+            "image/foto19.jpeg"
+        ];
+        
+        let slideIndex = 0;
+        let timerSlideshow;
+
+        function initSpotify() {
+            generateHearts();
+            generateTracklist();
+        }
+
+        function mulaiPlayer() {
+            try {
+                lagu.currentTime = 0;
+                lagu.play().catch(e => console.log("Audio diblokir browser"));
+            } catch(e) {}
+
+            document.getElementById('welcome-screen').style.opacity = '0';
+            document.getElementById('welcome-screen').style.visibility = 'hidden';
+
+            document.getElementById('main-app').style.display = 'block';
+            vinyl.classList.add('putar-vinyl');
+        }
+
+        function togglePlay() {
+            const btnPlayList = document.querySelectorAll('.btn-play');
+            if (lagu.paused) {
+                lagu.play();
+                btnPlayList.forEach(btn => btn.innerText = "⏸");
+                vinyl.classList.add('putar-vinyl');
+            } else {
+                lagu.pause();
+                btnPlayList.forEach(btn => btn.innerText = "▶");
+                vinyl.classList.remove('putar-vinyl');
+            }
+        }
+
+        // --- NAVIGASI HALAMAN + TRIGGER SLIDESHOW ---
+        function pindahScreen(idTujuan) {
+            const semuaScreen = document.querySelectorAll('.screen');
+            semuaScreen.forEach(screen => screen.classList.remove('active'));
+            
+            document.getElementById(idTujuan).classList.add('active');
+
+            if(idTujuan === 'screen-gallery') {
+                jalankanSlideshow();
+            } else {
+                hentikanSlideshow(); 
+            }
+        }
+
+        // --- LOGIKA SLIDESHOW GALERI ---
+        function ubahGambar(index) {
+            const imgEl = document.getElementById('slide-img');
+            imgEl.style.opacity = 0; 
+            
+            setTimeout(() => {
+                imgEl.src = fotoSlideshow[index];
+                imgEl.style.opacity = 1; 
+            }, 300); 
+        }
+
+        function nextSlide() {
+            slideIndex = (slideIndex + 1) % fotoSlideshow.length;
+            ubahGambar(slideIndex);
+        }
+
+        function prevSlide() {
+            slideIndex = (slideIndex - 1 + fotoSlideshow.length) % fotoSlideshow.length;
+            ubahGambar(slideIndex);
+        }
+
+        function jalankanSlideshow() {
+            hentikanSlideshow();
+            timerSlideshow = setInterval(nextSlide, 3000); 
+        }
+
+        function hentikanSlideshow() {
+            if(timerSlideshow) clearInterval(timerSlideshow);
+        }
+
+        // --- RENDER TRACKLIST ---
+        function generateTracklist() {
+            const container = document.getElementById('daftar-alasan');
+            alasanList.forEach((item, index) => {
+                const trackHTML = `
+                    <div class="track-item" onclick="bukaTrack(${index})">
+                        <div class="track-header">
+                            <div class="track-num">${index + 1}</div>
+                            <div class="track-details">
+                                <div class="track-title">${item.judul}</div>
+                                <div class="track-artist">Memories</div>
+                            </div>
+                            <div class="track-hint">Klik 👆</div>
+                        </div>
+                        <div class="track-body" id="track-body-${index}">
+                            <img src="${item.foto}" alt="Memori ${index+1}" class="track-photo" onerror="this.style.display='none'">
+                            <div class="track-desc">" ${item.alasan} "</div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += trackHTML;
+            });
+        }
+
+        function bukaTrack(index) {
+            const targetBody = document.getElementById(`track-body-${index}`);
+            if (targetBody.classList.contains('show')) {
+                targetBody.classList.remove('show');
+            } else {
+                const semuaBody = document.querySelectorAll('.track-body');
+                semuaBody.forEach(el => el.classList.remove('show'));
+                targetBody.classList.add('show');
+                setTimeout(() => {
+                    targetBody.parentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+
+        // --- INTERAKSI TOMBOL KABUR ---
+        function kaburDong() {
+            const tombolNggak = document.getElementById('tombol-nggak');
+            const wadah = document.getElementById('wadah-tombol');
+            const batasX = wadah.clientWidth - tombolNggak.clientWidth;
+            const batasY = 50; 
+            const acakX = Math.floor(Math.random() * batasX);
+            const acakY = Math.floor(Math.random() * batasY) - 25; 
+            tombolNggak.style.left = acakX + "px";
+            tombolNggak.style.top = acakY + "px";
+        }
+
+        function jawabYa() {
+            document.getElementById('teks-quiz').innerText = "Yeeeayy! Lopyuuu tooo sekebonnn sayanggg! 🤍🥳";
+            document.getElementById('wadah-tombol').innerHTML = "<button class='btn-quiz btn-ya' style='width:100%'>Udah dikunci, gabisa diubah! 🔐</button>";
+            for(let i=0; i<30; i++) {
+                setTimeout(createSingleHeart, i * 100);
+            }
+        }
+
+        function generateHearts() {
+            const container = document.getElementById('hearts-container');
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '🤍';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 8 + 's';
+                heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        function createSingleHeart() {
+            const container = document.getElementById('hearts-container');
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = '4s';
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
