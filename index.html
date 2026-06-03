@@ -179,15 +179,20 @@
         .track-photo { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .track-desc { font-size: 0.95rem; line-height: 1.5; color: #fff; text-align: left; }
 
-        /* --- SCREEN SLIDESHOW GALERI --- */
+        /* --- SCREEN SLIDESHOW GALERI (OPTIMALISASI MOBILE) --- */
         .slideshow-container {
             width: 100%; height: 350px; border-radius: 16px; overflow: hidden;
             position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border: 2px solid rgba(255, 255, 255, 0.1);
+            background: #000;
         }
         #slide-img {
             width: 100%; height: 100%; object-fit: cover;
-            transition: opacity 0.6s ease-in-out;
+            opacity: 1;
+            /* Perubahan: Transisi dibikin sedikit lebih cepat & memaksa GPU render biar mulus */
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: translateZ(0); 
+            will-change: opacity;
         }
         .slideshow-controls {
             display: flex; justify-content: center; gap: 40px; margin-top: 10px;
@@ -247,7 +252,7 @@
                 <h4>Lyrics / Surat Buat Kamu 📜</h4>
                 <div class="lyrics-text">
                     <p>Makasih yaa udah selalu sabar sama aku selama iniiiii, kalo ada nominasi manusia paling sabarr keknya itu kamu deh. 🤍</p>
-                    <p>Aku tahu aku banyak salah ke kamuuu, banyak bikin kesel, sering ngambek atau ngeselin, tapi kamu tetep milih buat sabar dan ngertiin akuu.</p>
+                    <p>Aku tahu aku banyak salah ke kamuuu, banyak bikin kesel, sering ngambek atau ngeselin, tapi kamu tetep milih buat sabar and ngertiin akuu.</p>
                     <p>Kadang aku suka mikir, kok bisa ya ada orang sebaik dan setulus kamu yang mau nemenin aku wkwk. Beruntung bangettt aku bisa punya kamu di hidup akuuuu.</p>
                     <p>Maaf ya kalo aku belum bisa jadi yang sempurna, tapi aku bakal selalu berusaha buat bahagiain kamu terussss. Makasii banyakkk pokonyaa lopyuuuuuuu sekebonn!! 🫶✨</p>
                 </div>
@@ -289,7 +294,7 @@
             </div>
 
             <div class="slideshow-container">
-                <img id="slide-img" src="image/slide1.jpeg" alt="Kenangan" onerror="this.src='image/foto1.png'">
+                <img id="slide-img" src="image/slide1.jpg" alt="Kenangan" onerror="this.src='image/foto1.png'">
             </div>
             
             <div class="slideshow-controls">
@@ -307,14 +312,14 @@
         let lagu = document.getElementById('musikBg');
         let vinyl = document.getElementById('vinyl');
 
-        // --- DATA TRACKLIST (ALASAN & FOTO) ---
+        // --- DATA TRACKLIST ---
         const alasanList = [
-            { judul: "Track 01: Tentang Kamu", alasan: "Kamu cantikkkkkk bangett cuy.", foto: "image/foto_galeri1.jpeg" },
-            { judul: "Track 02: Selalu Hadir", alasan: "Kamu selalu adaa buat akuuu dalam kondisi apapun.", foto: "image/foto_galeri2.jpeg" },
-            { judul: "Track 03: Kesabaranmu", alasan: "Kamu sabarrr bangett ngadepin tingkah aku selama ini.", foto: "image/foto_galeri3.jpeg" },
-            { judul: "Track 04: Telinga Terbaik", alasan: "Kamu selalu menjadi pendengar yang baik buat aku.", foto: "image/foto_galeri4.jpeg" },
-            { judul: "Track 05: Rasa Nyaman", alasan: "Kalo deket kamu tuh bawaannya selalu nyamannnn.", foto: "image/foto_galeri5.jpeg" },
-            { judul: "Track 06: Bonus Rahasia", alasan: "Dan tentunya bohayyyy + jago ekhemm :p", foto: "image/foto_galeri6.jpeg" }
+            { judul: "Track 01: Tentang Kamu", alasan: "Kamu cantikkkkkk bangett cuy.", foto: "image/foto_galeri1.jpg" },
+            { judul: "Track 02: Selalu Hadir", alasan: "Kamu selalu adaa buat akuuu dalam kondisi apapun.", foto: "image/foto_galeri2.jpg" },
+            { judul: "Track 03: Kesabaranmu", alasan: "Kamu sabarrr bangett ngadepin tingkah aku selama ini.", foto: "image/foto_galeri3.jpg" },
+            { judul: "Track 04: Telinga Terbaik", alasan: "Kamu selalu menjadi pendengar yang baik buat aku.", foto: "image/foto_galeri4.jpg" },
+            { judul: "Track 05: Rasa Nyaman", alasan: "Kalo deket kamu tuh bawaannya selalu nyamannnn.", foto: "image/foto_galeri5.jpg" },
+            { judul: "Track 06: Bonus Rahasia", alasan: "Dan tentunya bohayyyy + jago ekhemm :p", foto: "image/foto_galeri6.jpg" }
         ];
 
         // --- DATA FOTO UNTUK SLIDESHOW (19 FOTO) ---
@@ -373,7 +378,6 @@
             }
         }
 
-        // --- NAVIGASI HALAMAN + TRIGGER SLIDESHOW ---
         function pindahScreen(idTujuan) {
             const semuaScreen = document.querySelectorAll('.screen');
             semuaScreen.forEach(screen => screen.classList.remove('active'));
@@ -387,15 +391,16 @@
             }
         }
 
-        // --- LOGIKA SLIDESHOW GALERI ---
+        // --- LOGIKA SLIDESHOW GALERI YANG SUDAH DIOPTIMALKAN ---
         function ubahGambar(index) {
             const imgEl = document.getElementById('slide-img');
-            imgEl.style.opacity = 0; 
+            imgEl.style.opacity = 0; // Mulai memudar (Fade Out)
             
+            // Jeda waktu yang pas (200ms) untuk mengganti gambar saat transisi blur/fade berjalan
             setTimeout(() => {
                 imgEl.src = fotoSlideshow[index];
-                imgEl.style.opacity = 1; 
-            }, 300); 
+                imgEl.style.opacity = 1; // Muncul kembali (Fade In)
+            }, 200); 
         }
 
         function nextSlide() {
@@ -410,7 +415,7 @@
 
         function jalankanSlideshow() {
             hentikanSlideshow();
-            timerSlideshow = setInterval(nextSlide, 3000); 
+            timerSlideshow = setInterval(nextSlide, 3000); // Ganti gambar tiap 3 detik
         }
 
         function hentikanSlideshow() {
@@ -455,7 +460,6 @@
             }
         }
 
-        // --- INTERAKSI TOMBOL KABUR ---
         function kaburDong() {
             const tombolNggak = document.getElementById('tombol-nggak');
             const wadah = document.getElementById('wadah-tombol');
